@@ -1,5 +1,5 @@
 /* ~~~~~~~~~~~~~~ */
-/* Small RNG because TS/JS do not giving a seed to Math.random().
+/* Small RNG because TS/JS does not allow seeding Math.random().
 /* Distribution should be uniform in [0;m) ∩ N.
 /* ~~~~~~~~~~~~~~ */
 
@@ -11,7 +11,7 @@ export class RNG {
     private readonly c: number;
     private readonly m: number;
 
-    constructor(seed=Math.round(Math.random() * 42), a=1103515245, c=12345, m=2**31) {
+    constructor(seed=Math.round(Date.now()), a=1103515245, c=12345, m=2**31) {
         /**
          * Create a RNG using the given parameters.
          *
@@ -28,7 +28,7 @@ export class RNG {
 
     nextInt() {
         /**
-         * Returns the next int in [0;m) calculated by the RNG
+         * Returns the next integer in [0;m) calculated by the RNG
          */
         this.previous = (this.a * this.previous + this.c) % this.m;
 
@@ -56,5 +56,23 @@ export class RNG {
 
         this.nextInt()
         return this.previous % Math.abs(right - left + 1) + left
+    }
+
+    randomString(size: number) {
+        /**
+         * Returns a string of length `size`, composed of random alphanumeric characters
+         *
+         * @param size - the desired size of the output
+         */
+        if (size < 0) throw new Error("Invalid size.");
+
+        const base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+
+        let str = '';
+        for (let i = 0; i < size; i++) {
+            str += base[this.nextInRange(0, base.length - 1)];
+        }
+
+        return str;
     }
 }
